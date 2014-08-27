@@ -7,7 +7,7 @@ fontfile = '/usr/share/fonts/truetype/motoya-l-cedar/MTLc3m.ttf'
 face=FT2::Face.new fontfile
 
 size = ARGV[0]
-size ||= 32
+size ||= 16
 str = ARGV[1]
 str ||= 'かみKAMI'
 
@@ -22,5 +22,5 @@ face.glyph.render(FT2::RenderMode::MONO)
 b = face.glyph.bitmap
 m = face.glyph.metrics
 #b.buffer.unpack("a#{b.pitch}"*b.rows).each{|x|p x.unpack('B*')}
-p [c, [m.w, m.h, m.hbx, m.hby, m.ha, m.vbx, m.vby, m.va].map{|x|x/64}]
+p [c, [m.ha, m.va, m.w, m.h, m.hbx, m.vby, -m.vbx, m.hby].map{|x|x/64}]
 end
