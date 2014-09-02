@@ -97,15 +97,19 @@ font_black = '../fonts/NotoSansJP-Black.otf'
 font_regular = '../fonts/NotoSansJP-Regular.otf'
 
 size = ARGV[0]
-size ||= 32
+size ||= 32*8
 size = size.to_i
 str = ARGV[1]
-str ||= 'Takashi KAMI　かみたかし'
+str ||= 'も'
 #str ||= (' '..'~').to_a.join
 
-slip = Slip.new(1024,768)
-slip.face(font_motoya,size).cr(size*4)
+#slip = Slip.new(576,768)
+slip = Slip.new(size,size)
+slip.face(font_motoya,size).cr(size*7/8)
 slip.type(str)
-slip.face(font_thin,size*4)
-slip.type("hello")
+#slip.face(font_thin,size*4)
+#slip.type("hello")
 bmp("slip.bmp", slip.rows.join, slip.pitch)
+
+require '../ruby/png'
+PNG.write "slip.png", slip.rows.join, size,size
