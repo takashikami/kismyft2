@@ -19,31 +19,28 @@ class PNG
            chunk('IEND','')
     ].join
 
-    open(filename, "w") do |f|
-      f.write(png)
-    end
+    File.binwrite filename, png
   end
 
   def self.read(filename)
     idat = nil
     w,h = 0,0
-    open(filename) do |f|
-      data = f.read
-      a = []
-      head, rest = data.unpack('a8a*')
-      a << head
+    data = File.binread filename
+    a = []
+    head, rest = data.unpack('a8a*')
+    a << head
 
-      while rest.size > 0
-        len, typ, rst = rest.unpack('Na4a*')
-        dat, crc, rest = rst.unpack("a#{len}Na*")
+    while rest.size > 0
+      len, typ, rst = rest.unpack('Na4a*')
+      dat, crc, rest = rst.unpack("a#{len}Na*")
 
-        idat=Zlib::inflate dat if typ == 'IDAT'
-        w,h = dat.unpack('NN') if typ == 'IHDR'
+      idat=Zlib::inflate dat if typ == 'IDAT'
+      w,h = dat.unpack('NN') if typ == 'IHDR'
 
-        a << [len, typ, dat.unpack('H*').first, crc]
-      end
-      a.each{|aa|p aa}
+      a << [len, typ, dat.unpack('H*').first, crc]
     end
+    a.each{|aa|p aa}
+
     p = w/8 + (w%8 == 0 ? 0 : 1)
     idat.unpack("a#{p+1}"*h).map{|a|a.unpack("aa#{p}")}.transpose[1].map{|a|a.each_byte{|aa|printf "%08b",aa};puts}
     idat
